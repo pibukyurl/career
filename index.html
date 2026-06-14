@@ -175,9 +175,8 @@
 <section id="view-list" class="view active">
   <div class="hero">
     <div class="wrap hero-inner">
-      <p class="kicker">PIBUKYURL CAREERS</p>
       <h1>피부를 근본부터 바꾸는 콘텐츠,<br/>함께 만들 동료를 찾아요</h1>
-      <p class="lead">‘무엇을 바르는지’가 아니라 ‘어떻게 사는지’로 피부를 바꿔요.<br/>식습관·수면·루틴까지, 진짜 도움이 되는 이야기를 전해요.</p>
+      <p class="lead">‘무엇을 바르는지’가 아니라 ‘어떻게 사는지’로 피부를 바꿉니다.</p>
     </div>
   </div>
 
@@ -221,7 +220,7 @@ const APPLY_URL_MANAGER = "https://forms.fillout.com/t/여기에-운영매니저
 
 const JOBS = [
   /* ── 1. PD 채용 ─────────────────────────────────────────── */
-  {id:1, title:'PD 채용', category:'콘텐츠', type:'프리랜서',
+  {id:1, title:'PD 채용', category:'콘텐츠', type:'프리랜서', slug:'pd',
    skills:['콘텐츠','기획','리서치'], deadline:'6월 30일 오후 11:59 마감', roleName:'Content PD', tag:'~6/30 마감',
    applyUrl: APPLY_URL_PD,
    banner:'피부를 근본부터 바꾸는 콘텐츠, 함께 기획할 PD를 찾아요',
@@ -231,7 +230,7 @@ const JOBS = [
        '피부결은 ‘무엇을 바르느냐’가 아니라 ‘어떻게 사느냐’로 피부를 바꾸는 채널이에요. 제품 후기나 단순 리뷰보다, 식습관·수면·루틴처럼 피부를 근본부터 바꾸는 생활에 집중합니다.',
        '‘근본 원인을 짚어준 영상은 처음’이라는 반응이 쌓일수록, 보람만큼 책임감도 커졌어요. 더 깊이 있고 유익한 콘텐츠를 더 자주 전하기 위해, 함께 기획할 PD님을 모십니다.']},
      {h:'PD님은 이런 일을 해요',
-      body:['PD님은 ‘영상에 무엇을 담을지’를 설계하는 역할이에요. 기획과 리서치는 PD님이, 촬영과 진행은 대표가 맡습니다.'],
+      body:['PD님은 ‘영상에 무엇을 담을지’를 설계하는 역할이에요. 기획과 리서치는 PD님이, 촬영과 진행은 제가 맡아요.'],
       items:[
        '영상 주제 발굴과 구성 기획 — 무엇을, 어떤 흐름으로 풀어낼지 설계해요',
        '논문·자료 리서치 — 피부결 콘텐츠의 신뢰를 받치는 가장 중요한 일이에요',
@@ -255,15 +254,15 @@ const JOBS = [
    ]},
 
   /* ── 2. 운영 매니저 ──────────────────────────────────────── */
-  {id:2, title:'운영 매니저', category:'운영', type:'정규직',
+  {id:2, title:'운영 매니저', category:'운영', type:'정규직', slug:'manager',
    skills:['팀 운영','매니지먼트','커뮤니케이션'], deadline:'상시 채용', roleName:'Operations Manager',
    applyUrl: APPLY_URL_MANAGER,
-   banner:'대표와 함께 팀을 꾸리고 이끌어갈 운영 매니저를 찾아요',
+   banner:'저와 함께 팀을 꾸리고 이끌어갈 운영 매니저를 찾아요',
    blocks:[
      {h:'이런 자리예요', body:[
-       '피부결이 커가는 만큼, 팀이 더 잘 굴러가도록 가운데에서 중심을 잡아줄 운영 매니저를 찾아요. 대표와 함께 사람을 뽑고, 팀원과 직접 소통하며, 결과물을 점검하고 컨펌하는 역할이에요.']},
+       '피부결이 커가는 만큼, 팀이 더 잘 굴러가도록 가운데에서 중심을 잡아줄 운영 매니저를 찾아요. 저와 함께 사람을 뽑고, 팀원과 직접 소통하며, 결과물을 점검하고 컨펌하는 역할이에요.']},
      {h:'이런 일을 맡게 돼요', items:[
-       '대표와 함께 채용 면접에 참여하고, 합류할 동료를 함께 결정해요',
+       '저와 함께 채용 면접에 참여하고, 합류할 동료를 함께 결정해요',
        'PD·광고 등 팀원들과 직접 소통하며 업무를 조율해요',
        '콘텐츠와 결과물을 점검하고 컨펌해 퀄리티와 방향을 지켜요',
        '팀이 매끄럽게 굴러가도록 일정과 우선순위를 관리해요']},
@@ -324,7 +323,7 @@ function resetFilters(){
 }
 
 /* ---------- 상세 ---------- */
-function openDetail(id){
+function renderDetail(id){
   currentId = id;
   const j = JOBS.find(x=>x.id===id);
   const li = arr=>'<ul>'+arr.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
@@ -364,6 +363,19 @@ function openDetail(id){
   showView('detail');
 }
 
+/* ---------- 라우팅 (각 공고가 고유 주소를 가짐) ---------- */
+function openDetail(id){
+  const j = JOBS.find(x=>x.id===id);
+  if(j) history.pushState({job:j.slug}, '', location.pathname + '?job=' + j.slug);
+  renderDetail(id);
+}
+function route(){
+  const slug = new URLSearchParams(location.search).get('job');
+  const j = slug ? JOBS.find(x=>x.slug===slug) : null;
+  if(j) renderDetail(j.id); else showView('list');
+}
+window.addEventListener('popstate', route);
+
 /* ---------- 화면 전환 ---------- */
 function showView(name){
   views.forEach(v=>{ v.classList.remove('active'); v.classList.remove('anim'); });
@@ -374,7 +386,7 @@ function showView(name){
   window.scrollTo({top:0, behavior:REDUCED?'auto':'smooth'});
   if(!REDUCED){ void el.offsetWidth; el.classList.add('anim'); }
 }
-function goList(){ showView('list'); }
+function goList(){ history.pushState({}, '', location.pathname); showView('list'); }
 
 /* ---------- 시작 ---------- */
 buildOptions();
@@ -382,6 +394,7 @@ applyFilters();
 ['search','fCat','fType'].forEach(id=>{
   $(id).addEventListener(id==='search'?'input':'change', applyFilters);
 });
+route();
 </script>
 </body>
 </html>
